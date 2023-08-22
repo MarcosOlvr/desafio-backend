@@ -25,6 +25,9 @@ namespace desafio_backend.Data
             .WithMany()
             .HasForeignKey(p => p.Payer)
             .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<User>().HasIndex(u => u.Document).IsUnique();
+            modelBuilder.Entity<User>().HasIndex(u => u.Email).IsUnique();
         }
     }
 }

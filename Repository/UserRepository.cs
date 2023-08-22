@@ -60,25 +60,5 @@ namespace desafio_backend.Repository
 
             throw new Exception("Update error!");
         }
-
-        public void AddValue(int userId, decimal value)
-        {
-            var user = _db.Users.FirstOrDefault(x => x.Id == userId);
-
-            if (user != null)
-            {
-                user.Balance += value;
-            }
-        }
-
-        public void RmValue(int userId, decimal value)
-        {
-            var user = _db.Users.FirstOrDefault(x => x.Id == userId);
-
-            if (user != null)
-            {
-                user.Balance -= value;
-            }
-        }
     }
 }
