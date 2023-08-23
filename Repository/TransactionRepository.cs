@@ -22,7 +22,15 @@ namespace desafio_backend.Repository
                 throw new Exception("Payer or payee is null");
 
             if (payer.UserType.ToString() == "MERCHANT")
-                throw new Exception($"Merchants can't transfer money {payee.UserType.ToString()} and {payer.UserType.ToString()}"); // REVISAR O ENGLISH OF STREETS MY FRIEND
+                throw new Exception($"Merchants can't transfer money");
+
+            if (payer.Balance < transaction.Value)
+                throw new Exception("Insufficient funds");
+
+            var response = AuthorizeTransaction();
+
+            if (!response.Result)
+                throw new Exception("Transaction was not authorized");
 
             _db.Transactions.Add(transaction);
             _db.SaveChanges();
@@ -62,9 +70,6 @@ namespace desafio_backend.Repository
                 if (payer == null || payer == null)
                     throw new Exception("Payer or payee is null");
 
-                if (payer.UserType.ToString() == "MERCHANT")
-                    throw new Exception("Merchants can't transfer money"); // REVISAR O ENGLISH OF STREETS MY FRIEND
-
                 transactionById.Payer = transaction.Payer;
                 transactionById.Payee = transaction.Payee;
                 transactionById.Value = transaction.Value;
@@ -75,7 +80,7 @@ namespace desafio_backend.Repository
                 return transactionById;
             }
 
-            throw new Exception("Update deu ruim!");
+            throw new Exception("Update fails");
         }
 
         public void AddValue(int userId, decimal value)
@@ -102,6 +107,21 @@ namespace desafio_backend.Repository
                 _db.Users.Update(user);
                 _db.SaveChanges();
             }
+        }
+
+        public async Task<bool> AuthorizeTransaction()
+        {
+            HttpClient client = new HttpClient();
+            HttpResponseMessage response = await client.GetAsync("https://run.mocky.io/v3/8fafdd68-a090-496f-8c9a-3442cf30dae6");
+            response.EnsureSuccessStatusCode();
+            string responseBody = await response.Content.ReadAsStringAsync();
+
+            if (responseBody.Contains("Autorizado"))
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

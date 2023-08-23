@@ -9,6 +9,7 @@ namespace desafio_backend.Repository.Contracts
         Transaction GetTransaction(int id);
         Transaction AddTransaction(Transaction transaction);
         Transaction UpdateTransaction(int id, Transaction transaction);
-        void DeleteTransaction(int id);    
+        void DeleteTransaction(int id);
+        Task<bool> AuthorizeTransaction();
     }
 }
