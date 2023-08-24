@@ -21,44 +21,18 @@ namespace desafio_backend.Repository
             return user;
         }
 
-        public void DeleteUser(int id)
-        {
-            var user = _db.Users.Find(id);
-
-            if (user != null)
-            {
-                _db.Users.Remove(user);
-                _db.SaveChanges();
-            }
-        }
-
         public User GetUser(int id)
         {
             var user = _db.Users.FirstOrDefault(x => x.Id == id);
 
             return user;
         }
-
-        public User UpdateUser(int id, User user)
+        
+        public List<User> GetUsers()
         {
-            var userById = _db.Users.FirstOrDefault(x => x.Id == id);
+            var users = _db.Users.ToList();
 
-            if (userById != null) 
-            {
-                userById.FirstName = user.FirstName;
-                userById.LastName = user.LastName;
-                userById.Document = user.Document;
-                userById.Email = user.Email;
-                userById.Password = user.Password;
-                userById.Balance = user.Balance;
-
-                _db.Users.Update(userById);
-                _db.SaveChanges();
-
-                return userById;
-            }
-
-            throw new Exception("Update error!");
+            return users;
         }
     }
 }

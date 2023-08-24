@@ -39,5 +39,13 @@ namespace desafio_backend.Controllers
 
             return Ok(user);
         }
+
+        [HttpGet("users")]
+        public ActionResult GetUsers()
+        {
+            List<User> users = _userRepo.GetUsers();
+
+            return Ok(users);
+        }
     }
 }

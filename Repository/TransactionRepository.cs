@@ -13,30 +13,26 @@ namespace desafio_backend.Repository
             _db = db;
         }
 
+        public List<Transaction> GetAllTransactions()
+        {
+            List<Transaction> transactions = _db.Transactions.ToList();
+
+            return transactions;
+        }
+
         public Transaction AddTransaction(Transaction transaction)
         {
-            var payer = _db.Users.FirstOrDefault(p => p.Id == transaction.Payer);
-            var payee = _db.Users.FirstOrDefault(p => p.Id == transaction.Payee);
-
-            if (payer == null || payee == null)
-                throw new Exception("Payer or payee is null");
-
-            if (payer.UserType.ToString() == "MERCHANT")
-                throw new Exception($"Merchants can't transfer money");
-
-            if (payer.Balance < transaction.Value)
-                throw new Exception("Insufficient funds");
-
             var response = AuthorizeTransaction();
 
             if (!response.Result)
                 throw new Exception("Transaction was not authorized");
 
+
+            TransferValue(transaction.Payer, transaction.Value);
+            ReceiveValue(transaction.Payee, transaction.Value);
+
             _db.Transactions.Add(transaction);
             _db.SaveChanges();
-
-            AddValue(payee.Id, transaction.Value);
-            RmValue(payer.Id, transaction.Value);
 
             return transaction;
         }
@@ -80,32 +76,52 @@ namespace desafio_backend.Repository
                 return transactionById;
             }
 
-            throw new Exception("Update fails");
+            throw new Exception("Update error");
         }
 
-        public void AddValue(int userId, decimal value)
+        public void ReceiveValue(int userId, decimal value)
         {
-            var user = _db.Users.FirstOrDefault(x => x.Id == userId);
-
-            if (user != null)
+            try
             {
-                user.Balance += value;
+                var user = _db.Users.FirstOrDefault(x => x.Id == userId);
 
-                _db.Users.Update(user);
-                _db.SaveChanges();
+                if (user != null)
+                {
+                    user.Balance += value;
+
+                    _db.Users.Update(user);
+                    _db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
             }
         }
 
-        public void RmValue(int userId, decimal value)
+        public void TransferValue(int userId, decimal value)
         {
-            var user = _db.Users.FirstOrDefault(x => x.Id == userId);
-
-            if (user != null)
+            try
             {
-                user.Balance -= value;
+                var payer = _db.Users.FirstOrDefault(x => x.Id == userId);
 
-                _db.Users.Update(user);
-                _db.SaveChanges();
+                if (payer != null)
+                {
+                    if (payer.UserType.ToString() == "MERCHANT")
+                        throw new Exception($"Merchants can't transfer money");
+
+                    if (payer.Balance < value)
+                        throw new Exception("Insufficient funds");
+
+                    payer.Balance -= value;
+
+                    _db.Users.Update(payer);
+                    _db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
             }
         }
 

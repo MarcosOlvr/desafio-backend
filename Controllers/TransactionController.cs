@@ -16,6 +16,14 @@ namespace desafio_backend.Controllers
             _transactionRepo = transactionRepository;
         }
 
+        [HttpGet("transactions")]
+        public ActionResult AllTransactions()
+        {
+            var transaction = _transactionRepo.GetAllTransactions();
+
+            return Ok(transaction);
+        }
+        
         [HttpGet("transaction/{id:int}")]
         public ActionResult GetTransaction(int id)
         {
