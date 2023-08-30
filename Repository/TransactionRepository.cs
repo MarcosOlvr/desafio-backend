@@ -1,5 +1,6 @@
 ﻿using desafio_backend.Data;
 using desafio_backend.Models;
+using desafio_backend.Models.DTO;
 using desafio_backend.Repository.Contracts;
 
 namespace desafio_backend.Repository
@@ -13,11 +14,17 @@ namespace desafio_backend.Repository
             _db = db;
         }
 
-        public List<Transaction> GetAllTransactions()
+        public List<TransactionDTO> GetAllTransactions()
         {
             List<Transaction> transactions = _db.Transactions.ToList();
+            List<TransactionDTO> transactionDTOs = new List<TransactionDTO>();
 
-            return transactions;
+            foreach (var transaction in transactions)
+            {
+                transactionDTOs.Add(new TransactionDTO { Id = transaction.Id, Payer = transaction.Payer, Payee = transaction.Payee });
+            }
+
+            return transactionDTOs;
         }
 
         public Transaction AddTransaction(Transaction transaction)

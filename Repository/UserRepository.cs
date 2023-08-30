@@ -1,5 +1,6 @@
 ﻿using desafio_backend.Data;
 using desafio_backend.Models;
+using desafio_backend.Models.DTO;
 using desafio_backend.Repository.Contracts;
 
 namespace desafio_backend.Repository
@@ -28,11 +29,17 @@ namespace desafio_backend.Repository
             return user;
         }
         
-        public List<User> GetUsers()
+        public List<UserDTO> GetUsers()
         {
             var users = _db.Users.ToList();
+            List<UserDTO> usersDTO = new List<UserDTO>();
 
-            return users;
+            foreach (var user in users)
+            {
+                usersDTO.Add(new UserDTO { Id = user.Id, Name = user.FirstName + ' ' + user.LastName });
+            }
+
+            return usersDTO;
         }
     }
 }

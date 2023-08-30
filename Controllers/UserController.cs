@@ -1,4 +1,5 @@
 ﻿using desafio_backend.Models;
+using desafio_backend.Models.DTO;
 using desafio_backend.Repository.Contracts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -40,10 +41,10 @@ namespace desafio_backend.Controllers
             return Ok(user);
         }
 
-        [HttpGet("users")]
+        [HttpGet("user")]
         public ActionResult GetUsers()
         {
-            List<User> users = _userRepo.GetUsers();
+            List<UserDTO> users = _userRepo.GetUsers();
 
             return Ok(users);
         }
